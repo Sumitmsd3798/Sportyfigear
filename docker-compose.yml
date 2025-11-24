@@ -1,0 +1,39 @@
+version: "3.9"
+services:
+  mysql:
+    build: ./db
+    container_name: sportify-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: sportify
+      MYSQL_USER: sport
+      MYSQL_PASSWORD: sportpass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  backend:
+    build: ./backend
+    container_name: sportify-backend
+    environment:
+      DB_HOST: mysql
+      DB_USER: sport
+      DB_PASSWORD: sportpass
+      DB_NAME: sportify
+      JWT_SECRET: supersecretdev
+    depends_on:
+      - mysql
+    ports:
+      - "3000:3000"
+
+  frontend:
+    build: ./frontend
+    container_name: sportify-frontend
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+
+volumes:
+  mysql_data:
